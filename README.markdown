@@ -27,6 +27,23 @@ gem "cocoon"
 
 > Please note that for rails 4 you will need at least v1.2.0 or later.
 
+### Rails 6/Webpacker 
+
+Add the componanion package
+
+    yarn add @nathanvda/cocoon 
+    
+and then in your `app/javascripts/packs/application.js` you should add
+
+    require("jquery")
+    require("@nathanvda/cocoon")
+
+
+> Note: there are alternative npm packages, which might better suit your needs. 
+E.g. some offer the cocoon functionality without using jquery (search for `cocoon + vanilla` --I found three packages on npm already). 
+Obviously you are free to use those, however the code samples in this README will (still) rely on jquery.
+ 
+
 ### Rails 3.1+/Rails 4/Rails 5
 
 Add the following to `application.js` so it compiles to the asset pipeline:
@@ -218,10 +235,10 @@ This should be called within the form builder.
 
 `link_to_add_association` takes four parameters:
 
-- name: the text to show in the link
-- f: the form builder
-- association: the name of the association (plural) of which a new instance needs to be added (symbol or string).
-- html_options: extra html-options (see [`link_to`](http://api.rubyonrails.org/classes/ActionView/Helpers/UrlHelper.html#method-i-link_to)
+- **name**: the text to show in the link
+- **f**: the form builder
+- **association**: the name of the association (plural) of which a new instance needs to be added (symbol or string).
+- **html_options**: extra html-options (see [`link_to`](http://api.rubyonrails.org/classes/ActionView/Helpers/UrlHelper.html#method-i-link_to)
   There are some special options, the first three allow to control the placement of the new link-data:
   - `data-association-insertion-traversal` : the jquery traversal method to allow node selection relative to the link. `closest`, `next`, `children`, etc. Default: absolute selection
   - `data-association-insertion-node` : the jquery selector of the node as string, or a function that takes the `link_to_add_association` node as the parameter and returns a node. Default: parent node
@@ -234,6 +251,7 @@ This should be called within the form builder.
   - `wrap_object` : a proc that will allow to wrap your object, especially useful if you are using decorators (e.g. draper). See example lower.
   - `force_non_association_create`: if true, it will _not_ create the new object using the association (see lower)
   - `form_name` : the name of the form parameter in your nested partial. By default this is `f`.
+  - `count` : the number of nested items to insert at once. Default `1`.
 
 Optionally, you can omit the name and supply a block that is captured to render the link body (if you want to do something more complicated).
 
@@ -338,9 +356,9 @@ This should be placed inside the partial `_<association-object-singular>_fields`
 
 It takes three parameters:
 
-- name: the text to show in the link
-- f: referring to the containing form-object
-- html_options: extra html-options (see `link_to`)
+- **name**: the text to show in the link
+- **f**: referring to the containing form-object
+- **html_options**: extra html-options (see `link_to`)
 
 Optionally you could also leave out the name and supply a block that is captured to give the name (if you want to do something more complicated).
 
@@ -367,13 +385,14 @@ On insertion or removal the following events are triggered:
 To listen to the events in your JavaScript:
 
 ```javascript
-  $('#container').on('cocoon:before-insert', function(e, insertedItem) {
+  $('#container').on('cocoon:before-insert', function(e, insertedItem, originalEvent) {
     // ... do something
   });
 ```
 
 ...where `e` is the event and the second parameter is the inserted or removed item. This allows you to change markup, or
 add effects/animations (see example below).
+`originalEvent` is also passed and references the event that triggered an insertion or removal (e.g. the `click` event on the link to add an association)
 
 
 If in your view you have the following snippet to select an `owner`:
